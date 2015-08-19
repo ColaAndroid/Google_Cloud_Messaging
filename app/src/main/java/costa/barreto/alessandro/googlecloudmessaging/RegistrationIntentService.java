@@ -44,7 +44,7 @@ public class RegistrationIntentService extends IntentService{
 
                     preferences.edit().putBoolean("status", token != null && token.trim().length() > 0 ).apply();
 
-                    sendRegistrationId(token);
+                    //sendRegistrationId(token);
                 }
 
 
