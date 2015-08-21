@@ -17,8 +17,8 @@ public class MyGcmListenerService extends GcmListenerService {
     @Override
     public void onMessageReceived(String sendID, Bundle data) {
         //super.onMessageReceived(from, data);
-        String title = data.getString("title");
-        String message = data.getString("message");
-        EventBus.getDefault().post(new PushMessage(title,message));
+        //String title = data.getString("title");
+        String message = data.getString("mensagem");
+        EventBus.getDefault().post(new PushMessage("sem titulo",message));
     }
 }

@@ -7,11 +7,19 @@ import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import costa.barreto.alessandro.googlecloudmessaging.appaux.Application;
 import costa.barreto.alessandro.googlecloudmessaging.domain.User;
 import costa.barreto.alessandro.googlecloudmessaging.domain.WrapObjToNetwork;
 import costa.barreto.alessandro.googlecloudmessaging.network.NetworkConnection;
@@ -45,6 +53,7 @@ public class RegistrationIntentService extends IntentService{
                     preferences.edit().putBoolean("status", token != null && token.trim().length() > 0 ).apply();
 
                     //sendRegistrationId(token);
+                    enviarRegistro(token);
                 }
 
 
@@ -63,5 +72,40 @@ public class RegistrationIntentService extends IntentService{
                 .getInstance(this)
                 .execute( new WrapObjToNetwork(user, "save-user"), RegistrationIntentService.class.getName() );
     }
+
+    /**
+     * Metodo para enviar token e registrar no servidor.
+     * @param token
+     */
+    private void enviarRegistro(final String token){
+
+
+        StringRequest mStringRequest = new StringRequest(Request.Method.POST, "http://localizarcar.pe.hu/gcm_server.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i(LOG,"resposta: "+response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i(LOG,"resposta erro: "+error.toString());
+            }
+        }){
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params;
+                params = new HashMap<>();
+                params.put("acao","registar");
+                params.put("token",token);
+                return(params);
+            }
+        };
+
+        Application.getInstance().getRequestQueue().add(mStringRequest);
+
+    }
+
 
 }
